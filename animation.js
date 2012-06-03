@@ -67,17 +67,41 @@ var animation = (function () {
     _frames: [],
     _frameIndex: null,
     _frameDuration: 0,
+    _playing: true,
 
     load: function(data, offset) {
       offset = offset || 0;
       this._frames = data;
 
-      //Initialize the first frame
-      this._frameIndex = offset;
-      this._frameDuration = data[offset].time;
+      this.goTo(offset);
+    },
+
+    goTo: function(frame) {
+      this._frameIndex = frame;
+      this._frameDuration = this._frames[frame].time;
+    },
+
+    toggle: function () {
+      this._playing = !this._playing;
+    },
+
+    play: function () {
+      this._playing = true;
+    },
+
+    pause: function () {
+      this._playing = false;
+    },
+
+    stop: function () {
+      this._playing = false;
+      this.goTo(0);
     },
 
     animate: function(deltaTime) {
+      if (!this._playing)
+        return;
+
       //Reduce time passed from the duration to show a frame        
       this._frameDuration -= deltaTime;
 
@@ -162,6 +186,7 @@ var animation = (function () {
         ctx.strokeText(avg | 0, 2, 12);
         ctx.fillText(avg | 0, 2, 12);
         timer.tick();
+
       }, 5);
     };
 
