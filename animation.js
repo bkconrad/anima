@@ -68,9 +68,6 @@ var animation = (function () {
 
   Animation.prototype = {
     _frames: [],
-    _frameIndex: null,
-    _frameDuration: 0,
-    _playing: true,
 
     load: function(data, sprites, offset) {
       var i;
@@ -79,10 +76,52 @@ var animation = (function () {
       for (i = 0; i < this._frames.length; i++) {
         this._frames[i].index = sprites.getIndex(this._frames[i].sprite);
       } 
-
-      this.goTo(offset);
     },
 
+    getSprite: function(index) {
+      //Return the sprite for the current frame
+      return this._sprites.getOffset(this._frames[index].index);
+    }
+  }
+
+  var Sprite = function (image) {
+    this._image = image; 
+  };
+
+  Sprite.prototype = {
+    _animations: [],
+    _currentAnimation: null,
+    _frameIndex: null,
+    _frameDuration: 0,
+    _playing: true,
+    _image: null,
+    addAnimation: function (name, anim) {
+      this._animations[name] = anim;
+      this._currentAnimation = this._currentAnimation || anim;
+    },
+    animate: function (deltaTime) {
+      if (!this._playing)
+        return;
+
+      //Reduce time passed from the duration to show a frame        
+      this._frameDuration -= deltaTime;
+
+      //When the display duration has passed
+      if(this._frameDuration <= 0) {
+        //Change to next frame, or the first if ran out of frames
+        this._frameIndex++;
+        if(this._frameIndex == this._currentAnimation._frames.length) {
+          this._frameIndex = 0;
+        }
+
+        //Change duration to duration of new frame
+        this._frameDuration = this._currentAnimation._frames[this._frameIndex].time;
+      }
+    },
+    draw: function (x, y, ctx) {
+      var frame = this._currentAnimation.getSprite(this._frameIndex);
+      ctx.drawImage(this._image, frame.x, frame.y, 32, 32, x, y, 32, 32);
+    },
     goTo: function(frame) {
       this._frameIndex = frame;
       this._frameDuration = this._frames[frame].time;
@@ -103,37 +142,13 @@ var animation = (function () {
     stop: function () {
       this._playing = false;
       this.goTo(0);
-    },
-
-    animate: function(deltaTime) {
-      if (!this._playing)
-        return;
-
-      //Reduce time passed from the duration to show a frame        
-      this._frameDuration -= deltaTime;
-
-      //When the display duration has passed
-      if(this._frameDuration <= 0) {
-        //Change to next frame, or the first if ran out of frames
-        this._frameIndex++;
-        if(this._frameIndex == this._frames.length) {
-          this._frameIndex = 0;
-        }
-
-        //Change duration to duration of new frame
-        this._frameDuration = this._frames[this._frameIndex].time;
-      }
-    },
-
-    getSprite: function() {
-      //Return the sprite for the current frame
-      return this._sprites.getOffset(this._frames[this._frameIndex].index);
     }
-  }
+  };
 
   return {
     Animation: Animation,
     SpriteSheet: SpriteSheet,
+    Sprite: Sprite,
     FrameTimer: FrameTimer
   };
 
