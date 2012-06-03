@@ -1,4 +1,4 @@
-var animation = (function () {
+var anima = (function () {
   var FrameTimer = function() {
     this._lastTick = (new Date()).getTime();
   };

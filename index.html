@@ -8,12 +8,12 @@ window.onload = function() {
   var YSIZE = 10;
 
   // start a new timer
-  var timer = new animation.FrameTimer();
+  var timer = new anima.FrameTimer();
   timer.tick();
 
   // configure the spritesheet; all frames must be named
   // and can have x & y offsets
-  var spritesheet = new animation.SpriteSheet({
+  var spritesheet = new anima.SpriteSheet({
     width: 32,
     height: 32,
     sprites: [
@@ -24,7 +24,7 @@ window.onload = function() {
   });
 
   // create an animation with named frames from the spritesheet
-  var walk = new animation.Animation([
+  var walk = new anima.Animation([
       { sprite: 'walk_1', time: 0.2 },
       { sprite: 'stand', time: 0.2 },
       { sprite: 'walk_2', time: 0.2 },
@@ -40,7 +40,7 @@ window.onload = function() {
   for (i = 0; i < XSIZE; i++) {
     sprites[i] = [];
     for (j = 0; j < YSIZE; j++) {
-      sprites[i][j] = new animation.Sprite(kunioImage);
+      sprites[i][j] = new anima.Sprite(kunioImage);
       sprites[i][j].addAnimation('walk', walk);
     }
   }
