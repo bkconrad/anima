@@ -37,29 +37,34 @@ var animation = (function () {
       this._sprites = data.sprites;
     },
 
-    getOffset: function(spriteName) {
-      //Go through all sprites to find the required one
-      for(var i = 0, len = this._sprites.length; i < len; i++) {
-        var sprite = this._sprites[i];
-
-        if(sprite.name == spriteName) {
-          //To get the offset, multiply by sprite width
-          //Sprite-specific x and y offset is then added into it.
-          return {
-            x: (i * this._width) + (sprite.x||0),
-            y: (sprite.y||0),
-            width: this._width,
-            height: this._height
-          };
+    getIndex: function(spriteName) {
+      var i;
+      for (i = 0; i < this._sprites.length; i++) {
+        if (this._sprites[i].name == spriteName) {
+          return i;
         }
       }
+    },
+
+    getOffset: function(index) {
+      //Go through all sprites to find the required one
+      var sprite = this._sprites[index];
+
+      //To get the offset, multiply by sprite width
+      //Sprite-specific x and y offset is then added into it.
+      return {
+        x: (index * this._width) + (sprite.x||0),
+        y: (sprite.y||0),
+        width: this._width,
+        height: this._height
+      };
 
       return null;
     }
   };
 
   var Animation = function(data, sprites, offset) {
-    this.load(data, offset);
+    this.load(data, sprites, offset);
     this._sprites = sprites;
   };
 
@@ -69,9 +74,13 @@ var animation = (function () {
     _frameDuration: 0,
     _playing: true,
 
-    load: function(data, offset) {
+    load: function(data, sprites, offset) {
+      var i;
       offset = offset || 0;
       this._frames = data;
+      for (i = 0; i < this._frames.length; i++) {
+        this._frames[i].index = sprites.getIndex(this._frames[i].sprite);
+      } 
 
       this.goTo(offset);
     },
@@ -120,7 +129,7 @@ var animation = (function () {
 
     getSprite: function() {
       //Return the sprite for the current frame
-      return this._sprites.getOffset(this._frames[this._frameIndex].sprite);
+      return this._sprites.getOffset(this._frames[this._frameIndex].index);
     }
   }
 
