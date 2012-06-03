@@ -1,6 +1,4 @@
 var animation = (function () {
-  var XSIZE = 20;
-  var YSIZE = 10;
   var FrameTimer = function() {
     this._lastTick = (new Date()).getTime();
   };
@@ -133,73 +131,10 @@ var animation = (function () {
     }
   }
 
-  window.onload = function() {
-    var timer = new FrameTimer();
-    timer.tick();
-
-    var sprites = new SpriteSheet({
-      width: 32,
-      height: 32,
-      sprites: [
-        { name: 'stand' },
-        { name: 'walk_1', x: 0, y: 1 },
-        { name: 'walk_2', x: 0, y: 1 },
-      ]
-    });
-
-    var ctx = document.getElementById('canvas').getContext('2d');
-
-    var kunioImage = new Image();
-    var animations = [];
-    var i, j;
-    var anim;
-    for (i = 0; i < XSIZE; i++) {
-      animations[i] = [];
-      for (j = 0; j < YSIZE; j++) {
-        animations[i][j] = new Animation([
-                                          { sprite: 'walk_1', time: 0.1 },
-                                          { sprite: 'stand', time: 0.1 },
-                                          { sprite: 'walk_2', time: 0.1 },
-                                          { sprite: 'stand', time: 0.1 }
-        ], sprites, j % 3);
-      }
-    }
-
-    kunioImage.onload = function() {
-      var times = [];
-      var states = 50;
-      setInterval(function(){
-        var start = new Date().getTime();
-        var frame;
-        ctx.clearRect(0, 0, 600, 400);
-        for (i = 0; i < XSIZE; i++) {
-          for (j = 0; j < YSIZE; j++) {
-            animations[i][j].animate(timer.getSeconds());
-            frame = animations[i][j].getSprite();
-            ctx.drawImage(kunioImage, frame.x, frame.y, 32, 32, 32 * i, 32 * j, 32, 32);
-          }
-        }
-        if (times.length > states)
-          times.shift();
-
-        times.push(1000/(new Date().getTime() - start) | 0);
-
-        var avg = 0;
-        for (var i in times) {
-          avg += times[i];
-        }
-        avg /= i;
-        ctx.strokeStyle = "#000000";
-        ctx.fillStyle = "#FFFFFF";
-        ctx.lineWidth = 2;
-        ctx.strokeText(avg | 0, 2, 12);
-        ctx.fillText(avg | 0, 2, 12);
-        timer.tick();
-
-      }, 5);
-    };
-
-    kunioImage.src = 'animation.gif';
+  return {
+    Animation: Animation,
+    SpriteSheet: SpriteSheet,
+    FrameTimer: FrameTimer
   };
 
 })();
