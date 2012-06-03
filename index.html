@@ -6,68 +6,65 @@
 window.onload = function() {
   var XSIZE = 20;
   var YSIZE = 10;
+
+  // start a new timer
   var timer = new animation.FrameTimer();
   timer.tick();
 
+  // configure the spritesheet; all frames must be named
+  // and can have x & y offsets
   var spritesheet = new animation.SpriteSheet({
     width: 32,
     height: 32,
     sprites: [
     { name: 'stand' },
-    { name: 'walk_1'},
-    { name: 'walk_2'},
+    { name: 'walk_1', x: 0, y: 1},
+    { name: 'walk_2', x: 0, y: 1},
     ]
   });
 
-  var ctx = document.getElementById('canvas').getContext('2d');
-
-  var kunioImage = new Image();
-  var sprites = [];
-  var i, j;
-
-  var anim = new animation.Animation([
+  // create an animation with named frames from the spritesheet
+  var walk = new animation.Animation([
       { sprite: 'walk_1', time: 0.2 },
       { sprite: 'stand', time: 0.2 },
       { sprite: 'walk_2', time: 0.2 },
       { sprite: 'stand', time: 0.2 }
       ], spritesheet);
 
+  // create image
+  var kunioImage = new Image();
+
+  // add sprites with the above skin and attach the walk animation
+  var sprites = [];
+  var i, j;
   for (i = 0; i < XSIZE; i++) {
     sprites[i] = [];
     for (j = 0; j < YSIZE; j++) {
       sprites[i][j] = new animation.Sprite(kunioImage);
-      sprites[i][j].addAnimation('walk', anim);
+      sprites[i][j].addAnimation('walk', walk);
     }
   }
 
+  var ctx = document.getElementById('canvas').getContext('2d');
+
+  // set up animation loop
   kunioImage.onload = function() {
-    var times = [];
-    var states = 50;
+
     setInterval(function(){
-      var start = new Date().getTime();
       var frame;
+
+      // clear
       ctx.clearRect(0, 0, 600, 400);
+
+      // update & draw
       for (i = 0; i < XSIZE; i++) {
         for (j = 0; j < YSIZE; j++) {
           sprites[i][j].animate(timer.getSeconds());
           sprites[i][j].draw(32 * i, 32 * j, ctx);
         }
       }
-      if (times.length > states)
-      times.shift();
 
-      times.push(1000/(new Date().getTime() - start) | 0);
-
-      var avg = 0;
-      for (var i in times) {
-        avg += times[i];
-      }
-      avg /= i;
-      ctx.strokeStyle = "#000000";
-      ctx.fillStyle = "#FFFFFF";
-      ctx.lineWidth = 2;
-      ctx.strokeText(avg | 0, 2, 12);
-      ctx.fillText(avg | 0, 2, 12);
+      // tick the timer
       timer.tick();
 
     }, 5);
