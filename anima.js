@@ -124,7 +124,7 @@ var anima = (function () {
     },
     goTo: function(frame) {
       this._frameIndex = frame;
-      this._frameDuration = this._frames[frame].time;
+      this._frameDuration = this._currentAnimation._frames[frame].time;
     },
 
     toggle: function () {
