@@ -153,3 +153,8 @@ var anima = (function () {
   };
 
 })();
+
+try {
+  module.exports = anima;
+}
+catch (e) { }
