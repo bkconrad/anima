@@ -142,6 +142,10 @@ var anima = (function () {
     stop: function () {
       this._playing = false;
       this.goTo(0);
+    },
+
+    setAnimation: function (name) {
+      this._currentAnimation = this._animations[name];
     }
   };
 
