@@ -146,6 +146,7 @@ var anima = (function () {
 
     setAnimation: function (name) {
       this._currentAnimation = this._animations[name];
+      this.stop();
     }
   };
 
